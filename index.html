@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Мой питомец — тест</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: phone-sized wireframe prototype on the left, a narration panel on the right that explains the current state; stacks on phones. */
+:root{
+  --bg:#EEEDEA; --panel:#FFFFFF; --phone:#FFFFFF; --surface:#F2F1EE; --line:#D9D7D2;
+  --fg:#1E1D1B; --fg2:#6B6862; --muted:#9C9890; --accent:#33312D; --on-accent:#FFFFFF;
+  --hi:#E3E1DC; --good:#2F7D4F; --bad:#B4432F; --warn:#9A6B12;
+  --font:"Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#161615; --panel:#1F1E1D; --phone:#1C1B1A; --surface:#272624; --line:#3A3936;
+  --fg:#F1EFEA; --fg2:#B3AFA7; --muted:#827E77; --accent:#ECE9E3; --on-accent:#1A1918;
+  --hi:#34322F; --good:#6CC08E; --bad:#E58872; --warn:#E2B75E; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#161615; --panel:#1F1E1D; --phone:#1C1B1A; --surface:#272624; --line:#3A3936;
+  --fg:#F1EFEA; --fg2:#B3AFA7; --muted:#827E77; --accent:#ECE9E3; --on-accent:#1A1918;
+  --hi:#34322F; --good:#6CC08E; --bad:#E58872; --warn:#E2B75E; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;padding-inline:16px;padding-block:24px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+.phone{width:390px;max-width:100%;height:800px;max-height:calc(100vh - 48px);min-height:620px;background:var(--phone);border:1px solid var(--line);border-radius:36px;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 1px 0 var(--line)}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 26px;font-weight:600;font-size:14px}
+.screen{flex:1;overflow-y:auto;padding:4px 20px 24px;display:flex;flex-direction:column;gap:18px}
+.tabbar{flex:none;margin:0 14px 12px;height:58px;border-radius:29px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;padding:5px;gap:2px}
+.tab{flex:1;height:48px;border:0;background:none;border-radius:24px;color:var(--muted);font:500 10px var(--font);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
+.tab.on{background:var(--hi);color:var(--fg);font-weight:600}
+.tab .ic{font-size:17px;line-height:1}
+.tab.add{color:var(--fg);font-weight:600}
+.tab.add .plus{width:28px;height:28px;border-radius:14px;background:var(--accent);color:var(--on-accent);font-size:20px;line-height:28px;text-align:center}
+h1{font-size:27px;line-height:1.15;margin:0;font-weight:700;text-wrap:balance}
+h2{font-size:17px;margin:0;font-weight:700;display:flex;align-items:center;gap:8px}
+.sub{color:var(--fg2);font-size:14px;line-height:1.4;margin:0}
+.small{font-size:12.5px;color:var(--fg2)}
+.count{font-size:12px;font-weight:600;background:var(--hi);color:var(--fg2);border-radius:11px;padding:2px 8px}
+.btn{border:0;cursor:pointer;font:600 15px var(--font);border-radius:26px;height:50px;padding:0 18px;width:100%;background:var(--accent);color:var(--on-accent)}
+.btn.out{background:none;color:var(--fg);border:1.5px solid var(--accent)}
+.btn.ghost{background:none;color:var(--fg);height:auto;padding:6px;text-decoration:underline;font-weight:500}
+.pill{border:1.5px solid var(--accent);background:none;color:var(--fg);border-radius:17px;height:34px;padding:0 12px;font:600 13px var(--font);cursor:pointer;white-space:nowrap}
+.pill.solid{background:var(--accent);color:var(--on-accent)}
+.pill.done{background:var(--hi);border-color:transparent;color:var(--fg2)}
+.pill.soft{background:var(--surface);border-color:transparent}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.row{display:flex;align-items:center;gap:12px}
+.list{display:flex;flex-direction:column}
+.li{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.li .t{flex:1;min-width:0}
+.li .tt{font-weight:600;font-size:15px}
+.ava{width:40px;height:40px;border-radius:50%;background:var(--hi);display:flex;align-items:center;justify-content:center;font-weight:600;color:var(--fg2);flex:none}
+.ava.lg{width:56px;height:56px;font-size:18px;border:1.5px solid var(--accent);cursor:pointer}
+.ava.add{background:none;border:1.5px dashed var(--line);color:var(--muted);font-size:24px;font-weight:400}
+.ava.sm{width:32px;height:32px;font-size:13px}
+.pets{display:flex;gap:16px}
+.pets .p{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;background:none;border:0;color:var(--fg);cursor:pointer;font-family:var(--font)}
+.card{background:var(--surface);border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px}
+.card.overdue{background:var(--accent);color:var(--on-accent)}
+.card.overdue .small{color:var(--on-accent);opacity:.75}
+.card.overdue .ava{background:rgba(255,255,255,.18);color:var(--on-accent)}
+.card.overdue .pill{background:var(--on-accent);color:var(--accent);border-color:var(--on-accent)}
+.card.done{background:none;border:1px solid var(--line)}
+.card.done .tt{color:var(--muted)}
+.setup{border:1.5px solid var(--accent);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+.state-ok{color:var(--good);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:0;background:var(--surface);color:var(--fg);border-radius:18px;height:36px;padding:0 14px;font:500 14px var(--font);cursor:pointer}
+.chip.on{background:var(--accent);color:var(--on-accent);font-weight:600}
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-size:13px;font-weight:600;color:var(--fg2)}
+.input{height:48px;border:1px solid var(--line);border-radius:12px;padding:0 14px;font:15px var(--font);background:var(--phone);color:var(--fg);width:100%}
+.opt{border:0;text-align:left;cursor:pointer;border-radius:16px;padding:14px;background:var(--surface);color:var(--fg);font-family:var(--font);display:flex;flex-direction:column;gap:6px;min-height:118px;flex:1}
+.opt.main{background:var(--accent);color:var(--on-accent);min-height:0}
+.opt.soon{background:none;border:1px solid var(--line);color:var(--fg2)}
+.opt .tag{align-self:flex-start;font-size:11px;font-weight:600;background:var(--hi);color:var(--fg2);border-radius:11px;padding:2px 8px}
+.opt.main .tag{background:rgba(255,255,255,.2);color:var(--on-accent)}
+.opts{display:flex;gap:12px}
+.sheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end;z-index:5}
+.sheet{background:var(--phone);width:100%;border-radius:22px 22px 0 0;padding:20px;display:flex;flex-direction:column;gap:14px}
+.toast{position:absolute;left:16px;right:16px;bottom:84px;background:var(--fg);color:var(--bg);border-radius:14px;padding:12px 14px;font-size:14px;z-index:6}
+.panel{flex:1;min-width:280px;max-width:520px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px}
+.panel h3{margin:0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--fg2)}
+.panel .now{font-size:19px;font-weight:700;line-height:1.3;text-wrap:balance}
+.panel p{margin:0;line-height:1.55;color:var(--fg)}
+.steps{display:flex;flex-direction:column;gap:6px;padding:0;margin:0;list-style:none}
+.steps li{display:flex;gap:10px;align-items:center;font-size:14px;color:var(--fg2)}
+.steps li b{width:22px;height:22px;border-radius:50%;background:var(--hi);display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex:none;color:var(--fg2)}
+.steps li.cur{color:var(--fg);font-weight:600}
+.steps li.cur b{background:var(--accent);color:var(--on-accent)}
+.statebox{background:var(--surface);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.5}
+.reset{align-self:flex-start;background:none;border:1px solid var(--line);color:var(--fg);border-radius:18px;height:36px;padding:0 14px;font:500 14px var(--font);cursor:pointer}
+.result{border:1.5px solid var(--accent);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:8px}
+.big{font-size:20px;font-weight:700}
+@media (max-width:860px){.phone{height:740px}}
+@media (max-width:520px){body{padding:0}.phone{width:100%;height:100vh;height:100dvh;max-height:none;min-height:0;border:0;border-radius:0}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head><body>
+
+<div class="wrap">
+  <div class="phone" id="phone">
+    <div class="status"><span>9:41</span><span aria-hidden="true">▂▄▆ ◔</span></div>
+    <div class="screen" id="screen"></div>
+    <div id="tabbar"></div>
+    <div id="overlay"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+const TODAY = new Date(2026, 9, 8);
+const MONTHS = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+const PROCS = [
+  {id:'complex', name:'Комплексная прививка', months:12, freq:'раз в год', vac:true},
+  {id:'rabies',  name:'Прививка от бешенства', months:12, freq:'раз в год', vac:true},
+  {id:'worms',   name:'От глистов', months:3, freq:'раз в 3 месяца'},
+  {id:'ticks',   name:'От клещей и блох', months:1, freq:'ежемесячно в сезон'}
+];
+const STEPS = [
+  ['login','Вход'], ['addpet','Кто у вас живёт'], ['start','С чего начнём'],
+  ['today','Главная'], ['profile','Профиль питомца'], ['record','Запись процедуры']
+];
+
+function fresh(){
+  return {
+    screen:'login', pets:[], form:{name:'Буся', species:'Кошка'},
+    notif:false, done:[], profilePet:null, sheet:null, toast:'',
+    rec:{pets:[], proc:'complex', date:'2026-10-08'}, result:null, setupCelebrated:false
+  };
+}
+let S = fresh();
+
+const iso = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const fmt = d => d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear();
+const fmtShort = d => d.getDate()+' '+MONTHS[d.getMonth()];
+const addMonths = (d, m) => { const r = new Date(d.getFullYear(), d.getMonth()+m, d.getDate()); return r; };
+const days = (a, b) => Math.round((b - a) / 86400000);
+const proc = id => PROCS.find(p => p.id === id);
+const pet = id => S.pets.find(p => p.id === id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function plural(n, a, b, c){ const m10=n%10, m100=n%100; if(m10===1&&m100!==11) return a; if(m10>=2&&m10<=4&&(m100<10||m100>=20)) return b; return c; }
+
+function filled(p){ return PROCS.filter(x => p.records[x.id] !== undefined).length; }
+function setupLeft(){ return S.pets.some(p => filled(p) < PROCS.length); }
+function nextDate(p, pid){ const r = p.records[pid]; if(!r || r === 'unknown') return null; return addMonths(parse(r), proc(pid).months); }
+
+function tasks(){
+  const out = {overdue:[], today:[], soon:[], ask:[]};
+  S.pets.forEach(p => PROCS.forEach(x => {
+    const r = p.records[x.id];
+    if(r === 'unknown'){ out.ask.push({p, x}); return; }
+    if(!r) return;
+    if(S.done.some(d => d.pet===p.id && d.proc===x.id)) return;
+    const n = nextDate(p, x.id); const diff = days(TODAY, n);
+    const t = {p, x, n, diff};
+    if(diff < 0) out.overdue.push(t); else if(diff === 0) out.today.push(t); else if(diff <= 30) out.soon.push(t);
+  }));
+  out.soon.sort((a,b)=>a.diff-b.diff);
+  return out;
+}
+
+function go(screen){ S.screen = screen; S.sheet = null; render(); document.getElementById('screen').scrollTop = 0; }
+function toast(msg){ S.toast = msg; render(); clearTimeout(toast.t); toast.t = setTimeout(()=>{ S.toast=''; render(); }, 2600); }
+
+/* ---------- screens ---------- */
+function vLogin(){
+  return `<div style="height:250px;border-radius:24px;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px">иллюстрация</div>
+  <h1>Всё о питомце в одном месте</h1>
+  <p class="sub">Напомним о прививках и обработках, а медкарта всегда будет под рукой — у вас и у всей семьи.</p>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-top:auto">
+    <button class="btn" data-a="go" data-v="addpet">Продолжить с Apple</button>
+    <button class="btn out" data-a="go" data-v="addpet">Продолжить с Google</button>
+    <button class="btn ghost" data-a="go" data-v="addpet">Войти по почте</button>
+  </div>`;
+}
+function vAddPet(){
+  const added = S.pets.length ? `<div class="statebox">Уже добавлены: <b>${S.pets.map(p=>esc(p.name)).join(', ')}</b></div>` : '';
+  if(S.fromHome) return `<button class="btn ghost" style="align-self:flex-start;text-decoration:none" data-a="cancelPet">‹ Главная</button>
+  <h1>Новый питомец</h1>
+  <div class="chips">${['Кошка','Собака','Другое'].map(s=>`<button class="chip ${S.form.species===s?'on':''}" data-a="species" data-v="${s}">${s}</button>`).join('')}</div>
+  <div class="field"><label for="pname">Имя</label><input class="input" id="pname" value="${esc(S.form.name)}" autocomplete="off"></div>
+  <div class="field"><label for="pdob">Дата рождения</label><input class="input" id="pdob" placeholder="Например, 5 мая 2023"></div>
+  <button class="btn" data-a="petNext">Сохранить</button>`;
+  return `<h1>Кто у вас живёт?</h1>${added}
+  <div class="chips">${['Кошка','Собака','Другое'].map(s=>`<button class="chip ${S.form.species===s?'on':''}" data-a="species" data-v="${s}">${s}</button>`).join('')}</div>
+  <div class="field"><label for="pname">Имя</label><input class="input" id="pname" value="${esc(S.form.name)}" autocomplete="off"></div>
+  <div class="field"><label for="pdob">Дата рождения</label><input class="input" id="pdob" value="12 марта 2022"></div>
+  <div class="field"><label for="pbreed">Порода</label><input class="input" id="pbreed" placeholder="Необязательно"></div>
+  <button class="btn" data-a="petNext">Дальше</button>
+  <button class="btn ghost" data-a="petMore">+ Добавить ещё одного питомца</button>`;
+}
+function vStart(){
+  return `<div class="small">✓ ${S.pets.map(p=>esc(p.name)).join(' и ')} ${S.pets.length>1?'добавлены':'добавлен(а)'}</div>
+  <h1>С чего начнём?</h1>
+  <p class="sub">Выберите, что важнее сейчас. Остальное всегда можно сделать позже.</p>
+  <button class="opt main" data-a="go" data-v="today"><span class="tag">Рекомендуем</span><b style="font-size:19px">Внести прививки и обработки</b><span style="opacity:.8;font-size:14px">Подберём план по виду и возрасту — даты укажете постепенно</span></button>
+  <div class="opts">
+    <button class="opt" data-a="go" data-v="family"><b>Пригласить семью</b><span class="small">Ухаживать вместе</span></button>
+    <button class="opt soon" data-a="soon"><span class="tag">Скоро</span><b>Спросить помощника</b><span class="small">Если что-то беспокоит</span></button>
+  </div>
+  <button class="opt soon" data-a="soon" style="min-height:0"><span class="tag">Скоро</span><b>Запасы корма</b><span class="small">Напомним докупить</span></button>
+  <button class="btn ghost" data-a="go" data-v="today">Пропустить — на главный экран</button>`;
+}
+function petsRow(){
+  return `<div class="pets">${S.pets.map(p=>`<button class="p" data-a="profile" data-v="${p.id}"><span class="ava lg">${esc(p.initial)}</span>${esc(p.name)}</button>`).join('')}<button class="p" data-a="addPetHome"><span class="ava lg add">+</span>Добавить</button></div>`;
+}
+function setupBlock(){
+  const p = S.pets.find(x => filled(x) < PROCS.length);
+  if(!p) return '';
+  const f = filled(p);
+  const others = S.pets.filter(x => x !== p && filled(x) < PROCS.length);
+  return `<div class="setup">
+    <div class="row"><h2 style="flex:1">📋 Заполните медкарту: ${esc(p.name)}</h2><span class="small" style="font-weight:600">${f} из ${PROCS.length}</span></div>
+    <div class="bar"><i style="width:${f/PROCS.length*100}%"></i></div>
+    <p class="small">Когда делали в последний раз? Можно заполнять постепенно.</p>
+    <div class="list">${PROCS.map(x => procRow(p, x)).join('')}</div>
+    ${others.map(o=>`<div class="small" style="font-weight:600;color:var(--fg)">${esc(o.name)} — ${filled(o)} из ${PROCS.length} (заполнится следом)</div>`).join('')}
+  </div>`;
+}
+function procRow(p, x){
+  const r = p.records[x.id];
+  let right;
+  if(r === 'unknown') right = `<span class="pill done">Уточнить у врача</span>`;
+  else if(r) right = `<span class="pill done">✓ ${fmtShort(parse(r))} ${parse(r).getFullYear()}</span>`;
+  else right = `<button class="pill" data-a="date" data-p="${p.id}" data-x="${x.id}">Указать дату</button>`;
+  return `<div class="li"><div class="t"><div class="tt">${x.name}</div><div class="small">${x.freq}</div></div>${right}</div>`;
+}
+function taskCard(t, kind){
+  const when = kind==='overdue' ? `срок был ${fmtShort(t.n)}` : kind==='today' ? 'сегодня' : `через ${t.diff} ${plural(t.diff,'день','дня','дней')}, ${fmtShort(t.n)}`;
+  if(kind==='soon') return `<div class="li"><span class="ava sm">${esc(t.p.initial)}</span><div class="t"><div style="font-size:15px">${t.x.name}</div><div class="small">${esc(t.p.name)} · ${when}</div></div></div>`;
+  return `<div class="card ${kind==='overdue'?'overdue':''}"><span class="ava">${esc(t.p.initial)}</span><div class="t" style="flex:1;min-width:0"><div class="tt">${t.x.name}</div><div class="small">${esc(t.p.name)} · ${when}</div></div><button class="pill solid" data-a="markDone" data-p="${t.p.id}" data-x="${t.x.id}">Отметить</button></div>`;
+}
+function vToday(){
+  const T = tasks();
+  const sec = (title, n, body, icon='') => n ? `<div style="display:flex;flex-direction:column;gap:10px"><h2>${icon}${title} <span class="count">${n}</span></h2>${body}</div>` : '';
+  const doneList = S.done.map(d => { const p = pet(d.pet), x = proc(d.proc); return `<div class="card done"><span class="ava">${esc(p.initial)}</span><div class="t" style="flex:1"><div class="tt">${x.name}</div><div class="small">${esc(p.name)} · отметили вы, только что · следующая ${fmtShort(nextDate(p, x.id))} ${nextDate(p,x.id).getFullYear()}</div></div><span class="pill done">✓ Готово</span></div>`; }).join('');
+  const empty = !setupLeft() && !T.overdue.length && !T.today.length && !T.soon.length && !S.done.length
+    ? `<div class="statebox">Всё под контролем. Ближайшие дела появятся здесь за 30 дней до срока.</div>` : '';
+  const notif = S.notif ? '' : `<div class="card"><span style="font-size:20px">🔔</span><div style="flex:1"><div class="tt">Напоминания</div><div class="small">За 2 недели и за день</div></div><button class="pill solid" data-a="notif">Включить</button></div>`;
+  return `<div><div class="small">Четверг, 8 октября</div><h1>Главная</h1></div>
+  ${petsRow()}
+  ${setupBlock()}
+  ${notif}
+  ${sec('Просрочено', T.overdue.length, T.overdue.map(t=>taskCard(t,'overdue')).join(''), '⚠ ')}
+  ${sec('Сегодня', T.today.length + S.done.length, T.today.map(t=>taskCard(t,'today')).join('') + doneList)}
+  ${sec('Скоро', T.soon.length, `<div class="list">${T.soon.map(t=>taskCard(t,'soon')).join('')}</div>`)}
+  ${sec('Уточнить у врача', T.ask.length, `<div class="list">${T.ask.map(t=>`<div class="li"><span class="ava sm">${esc(t.p.initial)}</span><div class="t"><div>${t.x.name}</div><div class="small">${esc(t.p.name)} · дата неизвестна — спросите на ближайшем приёме</div></div><button class="pill" data-a="date" data-p="${t.p.id}" data-x="${t.x.id}">Указать</button></div>`).join('')}</div>`)}
+  ${empty}`;
+}
+function vProfile(){
+  const p = pet(S.profilePet) || S.pets[0];
+  if(!p) return `<h1>Питомцы</h1><p class="sub">Пока никого нет.</p>`;
+  const vacs = PROCS.filter(x => x.vac && p.records[x.id] && p.records[x.id] !== 'unknown').map(x => parse(p.records[x.id]));
+  const last = vacs.length ? fmt(new Date(Math.max(...vacs))) : 'не указана';
+  return `<button class="btn ghost" style="align-self:flex-start;text-decoration:none" data-a="go" data-v="today">‹ Главная</button>
+  ${S.pets.length>1 ? `<div class="chips">${S.pets.map(x=>`<button class="chip ${x===p?'on':''}" data-a="profile" data-v="${x.id}">${esc(x.name)}</button>`).join('')}</div>` : ''}
+  <div class="row"><span class="ava lg" style="cursor:default">${esc(p.initial)}</span><div><h1>${esc(p.name)}</h1><div class="small">${esc(p.species)}</div><div style="font-weight:600;font-size:13px;margin-top:4px">Последняя прививка: ${last}</div></div></div>
+  <h2>Медкарта</h2>
+  <div class="list">${PROCS.map(x => {
+    const r = p.records[x.id]; const n = nextDate(p, x.id);
+    const was = r === 'unknown' ? 'дата неизвестна' : r ? 'было ' + fmt(parse(r)) : 'не указано';
+    const nxt = n ? ` · следующая ${fmtShort(n)} ${n.getFullYear()}` : '';
+    const btn = (!r || r==='unknown') ? `<button class="pill" data-a="date" data-p="${p.id}" data-x="${x.id}">Указать дату</button>` : '';
+    return `<div class="li"><div class="t"><div class="tt">${x.name}</div><div class="small">${was}${nxt}</div></div>${btn}</div>`;
+  }).join('')}</div>
+  <button class="btn out" data-a="newRecord" data-v="${p.id}">+ Добавить запись</button>
+  <button class="btn" data-a="soon">Выписка для врача</button>
+  <p class="small" style="text-align:center;margin-top:-10px">История прививок и обработок одним файлом</p>`;
+}
+function vRecord(){
+  const R = S.rec;
+  const nextPreview = addMonths(parse(R.date), proc(R.proc).months);
+  return `<div class="row" style="justify-content:space-between"><button class="btn ghost" style="width:auto;text-decoration:none" data-a="go" data-v="today">Отмена</button><b>Новая запись</b><span style="width:52px"></span></div>
+  <div class="field"><label>Для кого</label><div class="chips">${S.pets.map(p=>`<button class="chip ${R.pets.includes(p.id)?'on':''}" data-a="recPet" data-v="${p.id}">${R.pets.includes(p.id)?'✓ ':''}${esc(p.name)}</button>`).join('')}</div><span class="small">Можно выбрать нескольких — запись появится у каждого</span></div>
+  <div class="field"><label for="rproc">Что сделали</label><select class="input" id="rproc">${PROCS.map(x=>`<option value="${x.id}" ${x.id===R.proc?'selected':''}>${x.name}</option>`).join('')}</select></div>
+  <div class="field"><label for="rdate">Когда</label><input class="input" type="date" id="rdate" value="${R.date}" max="2026-10-08"><span class="small">Можно указать прошедшую дату</span></div>
+  <div class="result"><span class="small">Следующая — посчитали сами</span><span class="big">${fmt(nextPreview)}</span><span class="small">Напомним за 2 недели и за день</span></div>
+  <button class="btn" data-a="saveRecord" ${R.pets.length?'':'disabled style="opacity:.4"'}>Сохранить${R.pets.length>1?` для ${R.pets.length} питомцев`:''}</button>`;
+}
+function vResult(){
+  const r = S.result;
+  return `<h1>Готово</h1>
+  <div class="result"><span class="small">${r.proc} · ${r.pets}</span><span class="big">Следующая: ${r.next}</span><span class="small">Напоминание поставлено само: за 2 недели и за день</span></div>
+  
+  <button class="btn" data-a="go" data-v="today">На главный экран</button>`;
+}
+function vFamily(){
+  return `<button class="btn ghost" style="align-self:flex-start;text-decoration:none" data-a="go" data-v="${S.pets.length?'today':'start'}">‹ Назад</button>
+  <h1>Пригласить в семью</h1>
+  <div style="height:170px;border-radius:16px;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--muted)">QR-код</div>
+  <div class="input" style="display:flex;align-items:center;color:var(--fg2)">mypet.app/i/7Hk2-qP9</div>
+  <p class="sub">Близкий человек откроет ссылку и сразу увидит ваших питомцев и дела. Отметки «Готово» будут видны вам обоим.</p>
+  <button class="btn" data-a="soonInvite">Отправить ссылку</button>`;
+}
+
+/* ---------- narration ---------- */
+function narrate(){
+  if(!document.getElementById('now')) return;
+  const total = S.pets.length * PROCS.length, f = S.pets.reduce((a,p)=>a+filled(p),0);
+  const T = tasks();
+  const n = {
+    login:['Вход','Первый экран. Нажмите любой способ входа — в прототипе они ведут дальше одинаково.'],
+    addpet: S.fromHome ? ['Новый питомец с главной','Кнопка «Добавить» в ряду питомцев. После сохранения человек сразу возвращается на главную, а новый питомец появляется в блоке «Заполните медкарту».'] : ['Добавляем питомца','Выберите вид и имя. Чтобы попробовать сценарий с двумя питомцами, нажмите «Добавить ещё одного питомца» — подставится Марс.'],
+    start:['Человек сам выбирает, с чего начать','Главный вариант — «Внести прививки и обработки». Он ведёт на главный экран, где медкарту можно заполнять постепенно. Помощник и запасы помечены «Скоро».'],
+    today: setupLeft()
+      ? ['«Главная», состояние 1: первый день','Приложение ещё не знает дат, поэтому дел почти нет. Вместо них — блок «Заполните медкарту». Нажмите «Указать дату» у любой процедуры и посмотрите, как появляются дела в «Скоро» и «Просрочено».']
+      : ['«Главная», состояние 2: обычный день','Все даты указаны — блок медкарты исчез сам. Теперь здесь только дела: просроченные, сегодняшние и ближайшие на 30 дней. Нажмите «Отметить» — дело уйдёт в «Готово», а срок пересчитается.'],
+    profile:['Профиль питомца','Здесь медкарта целиком: когда что делали и когда следующее. Сюда же ведут аватарки на главной. «+ Добавить запись» открывает форму.'],
+    record:['Запись процедуры','Выберите одного или нескольких питомцев, процедуру и дату. Следующий срок считается прямо на экране.'],
+    result:['Результат главного цикла','Запись сохранена, новый срок и напоминание поставлены автоматически.'],
+    family:['Приглашение в семью','Вне ядра, но можно посмотреть. В прототипе ссылка не отправляется.']
+  }[S.screen];
+  document.getElementById('now').textContent = n[0];
+  document.getElementById('explain').textContent = n[1];
+  const sb = document.getElementById('statebox');
+  if(S.pets.length){
+    sb.innerHTML = `Медкарта заполнена: <b>${f} из ${total}</b><br>Дела на главной: просрочено ${T.overdue.length}, сегодня ${T.today.length}, скоро ${T.soon.length}${T.ask.length?`, уточнить у врача ${T.ask.length}`:''}<br>Напоминания: ${S.notif?'включены':'выключены'}`;
+    sb.hidden = false;
+  } else sb.hidden = true;
+  const curIdx = {login:0, addpet:1, start:2, today:3, profile:4, record:5, result:5, family:-1}[S.screen];
+  document.getElementById('steps').innerHTML = STEPS.map((s,i)=>`<li class="${i===curIdx?'cur':''}"><b>${i+1}</b>${s[1]}${i===5?' → результат':''}</li>`).join('');
+}
+
+/* ---------- render ---------- */
+function render(){
+  const views = {login:vLogin, addpet:vAddPet, start:vStart, today:vToday, profile:vProfile, record:vRecord, result:vResult, family:vFamily};
+  document.getElementById('screen').innerHTML = views[S.screen]();
+  const showTabs = ['today','profile','record','result','family'].includes(S.screen) && S.pets.length;
+  const tabOn = {today:'today', profile:'profile', family:'family'}[S.screen];
+  document.getElementById('tabbar').innerHTML = showTabs ? `<nav class="tabbar" aria-label="Нижнее меню">
+    <button class="tab ${tabOn==='today'?'on':''}" data-a="go" data-v="today"><span class="ic">⌂</span>Главная</button>
+    <button class="tab ${tabOn==='profile'?'on':''}" data-a="profile" data-v="${(pet(S.profilePet)||S.pets[0]).id}"><span class="ic">🐾</span>Питомцы</button>
+    <button class="tab add" data-a="newRecord"><span class="plus">+</span>Записать</button>
+    <button class="tab" data-a="soonCal"><span class="ic">▦</span>Календарь</button>
+    <button class="tab ${tabOn==='family'?'on':''}" data-a="go" data-v="family"><span class="ic">👥</span>Семья</button>
+  </nav>` : '';
+  let ov = '';
+  if(S.sheet){
+    const p = pet(S.sheet.p), x = proc(S.sheet.x);
+    const quick = [['Месяц назад',1],['3 месяца назад',3],['Полгода назад',6],['Год назад',12]];
+    const prev = S.sheet.date ? addMonths(parse(S.sheet.date), x.months) : null;
+    ov += `<div class="sheet-bg" data-a="closeSheet"><div class="sheet" role="dialog" aria-label="Когда делали" data-stop="1">
+      <b style="font-size:17px">${x.name} · ${esc(p.name)}</b>
+      <span class="small">Когда делали в последний раз?</span>
+      <div class="chips">${quick.map(([l,m])=>`<button class="chip ${S.sheet.date===iso(addMonths(TODAY,-m))?'on':''}" data-a="quick" data-v="${m}">${l}</button>`).join('')}</div>
+      <input class="input" type="date" id="sdate" max="2026-10-08" value="${S.sheet.date||''}">
+      ${x.id==='rabies'?`<label class="small" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="together"> Делали вместе с комплексной</label>`:''}
+      <div class="statebox">${prev ? `Следующая: <b>${fmt(prev)}</b> — ${days(TODAY,prev)<0?'уже просрочено':'появится в «Скоро» за 30 дней'}` : 'Выберите дату — посчитаем следующий срок'}</div>
+      <button class="btn" data-a="saveDate" ${S.sheet.date?'':'disabled style="opacity:.4"'}>Сохранить</button>
+      <button class="btn out" data-a="unknown">Не знаю дату</button>
+    </div></div>`;
+  }
+  if(S.toast) ov += `<div class="toast" role="status">${esc(S.toast)}</div>`;
+  document.getElementById('overlay').innerHTML = ov;
+  narrate();
+}
+
+/* ---------- actions ---------- */
+function addCurrentPet(){
+  const nameEl = document.getElementById('pname');
+  const name = (nameEl ? nameEl.value : S.form.name).trim() || 'Питомец';
+  if(S.pets.some(p => p.name === name)) return;
+  const id = 'p' + (S.pets.length + 1);
+  const records = {};
+  if(S.pets.length === 0) records.complex = '2025-10-12';
+  S.pets.push({id, name, species:S.form.species, initial:name[0].toUpperCase(), records});
+}
+const A = {
+  go: v => go(v),
+  species: v => { const el = document.getElementById('pname'); if(el) S.form.name = el.value; S.form.species = v; render(); },
+  petMore: () => { addCurrentPet(); S.form = {name:'Марс', species:'Собака'}; render(); toast('Питомец добавлен. Заполните второго или нажмите «Дальше»'); },
+  petNext: () => { addCurrentPet(); if(S.fromHome){ S.fromHome=false; go('today'); toast('Питомец добавлен. Укажите даты в блоке «Заполните медкарту»'); } else go('start'); },
+  addPetHome: () => { S.fromHome = true; S.form = S.pets.some(p=>p.name==='Марс') ? {name:'', species:'Кошка'} : {name:'Марс', species:'Собака'}; go('addpet'); },
+  cancelPet: () => { S.fromHome = false; go('today'); },
+  soon: () => toast('Появится в следующей версии'),
+  soonCal: () => toast('Календаря в этом прототипе нет'),
+  soonInvite: () => toast('В прототипе ссылка не отправляется'),
+  profile: v => { S.profilePet = v; go('profile'); },
+  notif: () => { S.notif = true; toast('Напоминания включены'); },
+  date: (v, el) => { S.sheet = {p:el.dataset.p, x:el.dataset.x, date:''}; render(); },
+  closeSheet: (v, el, ev) => { if(ev.target.closest('[data-stop]')) return; S.sheet = null; render(); },
+  quick: v => { S.sheet.date = iso(addMonths(TODAY, -Number(v))); render(); },
+  saveDate: () => {
+    const p = pet(S.sheet.p); const before = setupLeft();
+    p.records[S.sheet.x] = S.sheet.date;
+    const tog = document.getElementById('together');
+    if(tog && tog.checked && p.records.complex && p.records.complex !== 'unknown') p.records.rabies = p.records.complex;
+    S.sheet = null;
+    if(before && !setupLeft()) toast('Медкарта заполнена — блок исчез, теперь здесь только дела'); else render();
+  },
+  unknown: () => { const p = pet(S.sheet.p); const before = setupLeft(); p.records[S.sheet.x] = 'unknown'; S.sheet = null;
+    if(before && !setupLeft()) toast('Медкарта заполнена — блок исчез, теперь здесь только дела'); else render(); },
+  markDone: (v, el) => { const p = pet(el.dataset.p); p.records[el.dataset.x] = iso(TODAY); S.done.push({pet:p.id, proc:el.dataset.x}); toast('Отмечено. Новый срок посчитан'); },
+  newRecord: v => { S.rec = {pets: v ? [v] : S.pets.map(p=>p.id), proc:'complex', date:iso(TODAY)}; go('record'); },
+  recPet: v => { const i = S.rec.pets.indexOf(v); if(i>=0) S.rec.pets.splice(i,1); else S.rec.pets.push(v); render(); },
+  saveRecord: () => {
+    if(!S.rec.pets.length) return;
+    const x = proc(S.rec.proc);
+    S.rec.pets.forEach(id => { pet(id).records[x.id] = S.rec.date; });
+    S.result = {proc:x.name, pets:S.rec.pets.map(id=>pet(id).name).join(' и '), next:fmt(addMonths(parse(S.rec.date), x.months))};
+    go('result');
+  }
+};
+document.addEventListener('click', ev => {
+  const el = ev.target.closest('[data-a]'); if(!el) return;
+  const fn = A[el.dataset.a]; if(fn) fn(el.dataset.v, el, ev);
+});
+document.addEventListener('input', ev => {
+  if(ev.target.id === 'sdate' && S.sheet){ S.sheet.date = ev.target.value; render(); const d=document.getElementById('sdate'); if(d) d.focus(); }
+  if(ev.target.id === 'rdate' && ev.target.value){ S.rec.date = ev.target.value; render(); }
+  if(ev.target.id === 'pname'){ S.form.name = ev.target.value; }
+});
+document.addEventListener('change', ev => {
+  if(ev.target.id === 'rproc'){ S.rec.proc = ev.target.value; render(); }
+});
+document.getElementById('reset')?.addEventListener('click', () => { S = fresh(); render(); });
+render();
+document.querySelector('.status').addEventListener('dblclick', () => {
+  S = fresh();
+  S.pets = [
+    {id:'p1', name:'Буся', species:'Кошка', initial:'Б', records:{complex:'2025-10-12', rabies:'2025-10-12', worms:'2026-07-08', ticks:'2026-09-25'}},
+    {id:'p2', name:'Марс', species:'Собака', initial:'М', records:{complex:'2026-03-02', rabies:'2026-03-02', worms:'2026-08-20', ticks:'2026-08-20'}}
+  ];
+  S.notif = true; S.profilePet = 'p1'; go('today');
+});
+})();
+</script>
+
+</body></html>
