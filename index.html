@@ -40,6 +40,10 @@ h2{font-size:17px;margin:0;font-weight:700;display:flex;align-items:center;gap:8
 .btn{border:0;cursor:pointer;font:600 15px var(--font);border-radius:26px;height:50px;padding:0 18px;width:100%;background:var(--accent);color:var(--on-accent)}
 .btn.out{background:none;color:var(--fg);border:1.5px solid var(--accent)}
 .btn.ghost{background:none;color:var(--fg);height:auto;padding:6px;text-decoration:underline;font-weight:500}
+.li.more{width:100%;background:none;border:0;border-bottom:1px solid var(--line);font:inherit;color:var(--fg);text-align:left;cursor:pointer}
+.li.more:last-child{border-bottom:0}
+.li.more .chev{color:var(--muted);font-size:20px}
+.btn.back{align-self:flex-start;width:auto;text-decoration:none;padding:0 2px;height:32px;margin-bottom:-12px}
 .pill{border:1.5px solid var(--accent);background:none;color:var(--fg);border-radius:17px;height:34px;padding:0 12px;font:600 13px var(--font);cursor:pointer;white-space:nowrap}
 .pill.solid{background:var(--accent);color:var(--on-accent)}
 .pill.done{background:var(--hi);border-color:transparent;color:var(--fg2)}
@@ -180,7 +184,7 @@ function vLogin(){
 }
 function vAddPet(){
   const added = S.pets.length ? `<div class="statebox">Уже добавлены: <b>${S.pets.map(p=>esc(p.name)).join(', ')}</b></div>` : '';
-  if(S.fromHome) return `<button class="btn ghost" style="align-self:flex-start;text-decoration:none" data-a="cancelPet">‹ Главная</button>
+  if(S.fromHome) return `<button class="btn ghost back" data-a="cancelPet">‹ Назад</button>
   <h1>Новый питомец</h1>
   <div class="chips">${['Кошка','Собака','Другое'].map(s=>`<button class="chip ${S.form.species===s?'on':''}" data-a="species" data-v="${s}">${s}</button>`).join('')}</div>
   <div class="field"><label for="pname">Имя</label><input class="input" id="pname" value="${esc(S.form.name)}" autocomplete="off"></div>
@@ -195,15 +199,16 @@ function vAddPet(){
   <button class="btn ghost" data-a="petMore">+ Добавить ещё одного питомца</button>`;
 }
 function vStart(){
-  return `<div class="small">✓ ${S.pets.map(p=>esc(p.name)).join(' и ')} ${S.pets.length>1?'добавлены':'добавлен(а)'}</div>
+  return `<button class="btn ghost back" data-a="go" data-v="addpet">‹ Назад</button>
+  <div class="small">✓ ${S.pets.map(p=>esc(p.name)).join(' и ')} ${S.pets.length>1?'добавлены':'добавлен(а)'}</div>
   <h1>С чего начнём?</h1>
   <p class="sub">Выберите, что важнее сейчас. Остальное всегда можно сделать позже.</p>
   <button class="opt main" data-a="go" data-v="today"><span class="tag">Рекомендуем</span><b style="font-size:19px">Внести прививки и обработки</b><span style="opacity:.8;font-size:14px">Подберём план по виду и возрасту — даты укажете постепенно</span></button>
   <div class="opts">
     <button class="opt" data-a="go" data-v="family"><b>Пригласить семью</b><span class="small">Ухаживать вместе</span></button>
-    <button class="opt soon" data-a="soon"><span class="tag">Скоро</span><b>Спросить помощника</b><span class="small">Если что-то беспокоит</span></button>
+    <button class="opt" data-a="soon"><b>Спросить AI‑помощника</b><span class="small">Если что-то беспокоит</span></button>
   </div>
-  <button class="opt soon" data-a="soon" style="min-height:0"><span class="tag">Скоро</span><b>Запасы корма</b><span class="small">Напомним докупить</span></button>
+  <button class="opt" data-a="soon" style="min-height:0;flex:none"><b>Запасы корма</b><span class="small">Напомним докупить</span></button>
   <button class="btn ghost" data-a="go" data-v="today">Пропустить — на главный экран</button>`;
 }
 function petsRow(){
@@ -242,7 +247,8 @@ function vToday(){
   const empty = !setupLeft() && !T.overdue.length && !T.today.length && !T.soon.length && !S.done.length
     ? `<div class="statebox">Всё под контролем. Ближайшие дела появятся здесь за 30 дней до срока.</div>` : '';
   const notif = S.notif ? '' : `<div class="card"><span style="font-size:20px">🔔</span><div style="flex:1"><div class="tt">Напоминания</div><div class="small">За 2 недели и за день</div></div><button class="pill solid" data-a="notif">Включить</button></div>`;
-  return `<div><div class="small">Четверг, 8 октября</div><h1>Главная</h1></div>
+  const back = setupLeft() ? `<button class="btn ghost back" data-a="go" data-v="start">‹ Назад</button>` : '';
+  return `${back}<div><div class="small">Четверг, 8 октября</div><h1>Главная</h1></div>
   ${petsRow()}
   ${setupBlock()}
   ${notif}
@@ -250,14 +256,21 @@ function vToday(){
   ${sec('Сегодня', T.today.length + S.done.length, T.today.map(t=>taskCard(t,'today')).join('') + doneList)}
   ${sec('Скоро', T.soon.length, `<div class="list">${T.soon.map(t=>taskCard(t,'soon')).join('')}</div>`)}
   ${sec('Уточнить у врача', T.ask.length, `<div class="list">${T.ask.map(t=>`<div class="li"><span class="ava sm">${esc(t.p.initial)}</span><div class="t"><div>${t.x.name}</div><div class="small">${esc(t.p.name)} · дата неизвестна — спросите на ближайшем приёме</div></div><button class="pill" data-a="date" data-p="${t.p.id}" data-x="${t.x.id}">Указать</button></div>`).join('')}</div>`)}
-  ${empty}`;
+  ${empty}
+  <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px"><h2>Все функции</h2>
+    <div class="list">
+      <button class="li more" data-a="go" data-v="family"><span class="ava sm">👥</span><div class="t" style="flex:1"><div>Пригласить семью</div><div class="small">Ухаживать вместе</div></div><span class="chev">›</span></button>
+      <button class="li more" data-a="soon"><span class="ava sm">💬</span><div class="t" style="flex:1"><div>Спросить AI‑помощника</div><div class="small">Если что-то беспокоит</div></div><span class="chev">›</span></button>
+      <button class="li more" data-a="soon"><span class="ava sm">🥫</span><div class="t" style="flex:1"><div>Запасы корма</div><div class="small">Напомним докупить</div></div><span class="chev">›</span></button>
+    </div>
+  </div>`;
 }
 function vProfile(){
   const p = pet(S.profilePet) || S.pets[0];
   if(!p) return `<h1>Питомцы</h1><p class="sub">Пока никого нет.</p>`;
   const vacs = PROCS.filter(x => x.vac && p.records[x.id] && p.records[x.id] !== 'unknown').map(x => parse(p.records[x.id]));
   const last = vacs.length ? fmt(new Date(Math.max(...vacs))) : 'не указана';
-  return `<button class="btn ghost" style="align-self:flex-start;text-decoration:none" data-a="go" data-v="today">‹ Главная</button>
+  return `<button class="btn ghost back" data-a="go" data-v="today">‹ Назад</button>
   ${S.pets.length>1 ? `<div class="chips">${S.pets.map(x=>`<button class="chip ${x===p?'on':''}" data-a="profile" data-v="${x.id}">${esc(x.name)}</button>`).join('')}</div>` : ''}
   <div class="row"><span class="ava lg" style="cursor:default">${esc(p.initial)}</span><div><h1>${esc(p.name)}</h1><div class="small">${esc(p.species)}</div><div style="font-weight:600;font-size:13px;margin-top:4px">Последняя прививка: ${last}</div></div></div>
   <h2>Медкарта</h2>
@@ -290,7 +303,7 @@ function vResult(){
   <button class="btn" data-a="go" data-v="today">На главный экран</button>`;
 }
 function vFamily(){
-  return `<button class="btn ghost" style="align-self:flex-start;text-decoration:none" data-a="go" data-v="${S.pets.length?'today':'start'}">‹ Назад</button>
+  return `<button class="btn ghost back" data-a="go" data-v="${S.pets.length?'today':'start'}">‹ Назад</button>
   <h1>Пригласить в семью</h1>
   <div style="height:170px;border-radius:16px;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--muted)">QR-код</div>
   <div class="input" style="display:flex;align-items:center;color:var(--fg2)">mypet.app/i/7Hk2-qP9</div>
